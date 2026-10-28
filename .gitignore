@@ -1,6 +1,8 @@
 .vscode/
 nanoplot/
+ref_genome/
 *.fastq.gz
 *.fasta
 *.bam
 *.out
+*.sam
