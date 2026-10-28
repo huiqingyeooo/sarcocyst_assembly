@@ -1,0 +1,9 @@
+.vscode/
+nanoplot/
+*.slurm
+*.sh
+*.out
+*.bam
+*.fastq.gz
+*.fastq
+*.fasta
