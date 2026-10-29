@@ -13,11 +13,12 @@ conda activate /work/soghigian_lab/apps/conda/envs/nanoplot
 ####### script ##################################
 # reference script from: https://github.com/henrimdias/emu-microbiome-HPC/blob/main/emu_pipeline/scripts/run_nanotools_pipeline.slurm
 
-cd /work/soghigian_lab/huiqing.yeo/sarcocyst
+cd /work/soghigian_lab/huiqing.yeo/sarcocyst_assembly
 
 # QC reads after filtering
-NanoPlot --fastq sarcocyst.fastq.gz --threads 8 \
---outdir nanoplot \
---legacy hex dot
+#NanoPlot --fastq basecalled.fastq.gz --threads 8 --outdir nanoplot/basecalled --legacy hex dot
+
+# QC reads after filtering
+NanoPlot --fastq unmapped_q10.fastq --threads 8 --outdir nanoplot/unmapped --legacy hex dot
 
 echo "Job finised with exit code $? at: `date`"

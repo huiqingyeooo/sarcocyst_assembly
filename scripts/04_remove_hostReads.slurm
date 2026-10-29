@@ -3,8 +3,8 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=16
-#SBATCH --time=3-00:00:00
-#SBATCH --mem=100G
+#SBATCH --time=1-00:00:00
+#SBATCH --mem=50G
 
 ####### Set environment variables ###############
 MINIMAP2=/work/soghigian_lab/apps/minimap2-2.31_x64-linux/minimap2
@@ -16,9 +16,6 @@ cd /work/soghigian_lab/huiqing.yeo/sarcocyst_assembly
 ####### script ##################################
 # Map reads to Rangifer tarandus reference genome
 # Find and extract unmapped reads
-${MINIMAP2} -t 8 -ax map-ont ${REF_GENOME} basecalled_q10.fastq.gz | ${SAMTOOLS} view -b -f 4 | ${SAMTOOLS} fastq > unmapped.fastq
-
-# convert BAM to FASTQ
-${SAMTOOLS} fastq unmapped.bam > unmapped.fastq
+${MINIMAP2} -t 8 -ax map-ont ${REF_GENOME} basecalled_q10.fastq.gz | ${SAMTOOLS} view -b -f 4 | ${SAMTOOLS} fastq > unmapped_q10.fastq
 
 echo "Job finised with exit code $? at: `date`"

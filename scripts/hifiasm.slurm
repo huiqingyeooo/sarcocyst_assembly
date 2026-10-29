@@ -10,9 +10,9 @@
 HIFIASM=/work/soghigian_lab/apps/hifiasm-0.16/hifiasm
 
 ####### script ##################################
-cd /work/soghigian_lab/huiqing.yeo/sarcocyst
+cd /work/soghigian_lab/huiqing.yeo/sarcocyst_assembly
 
 # genome assembly
-${HIFIASM} -t 16 -o sarcocyst_hifiasm.asm sarcocyst_q15.fastq.gz
+${HIFIASM} -t 16 -o ./hifiasm/sarcocyst_q10_hifiasm.asm unmapped_q10.fastq
 
 echo "Job finised with exit code $? at: `date`"

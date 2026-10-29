@@ -1,9 +1,12 @@
 .vscode/
 nanoplot/
 ref_genome/
+flye/
+basta/
 *.fastq.gz
 *.fasta
 *.fastq
 *.bam
 *.out
 *.sam
+*.asm*

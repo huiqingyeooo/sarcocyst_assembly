@@ -11,9 +11,9 @@ source ~/software/init-conda-sl
 conda activate /work/soghigian_lab/apps/conda/envs/flye
 
 ####### script ##################################
-cd /work/soghigian_lab/huiqing.yeo/sarcocyst
+cd /work/soghigian_lab/huiqing.yeo/sarcocyst_assembly
 
 # genome assembly
-flye --threads 16 --nano-hq sarcocyst_q15.fastq.gz --out-dir ./flye/
+flye --threads 16 --nano-hq unmapped_q10.fastq --out-dir ./flye/
 
 echo "Job finised with exit code $? at: `date`"
