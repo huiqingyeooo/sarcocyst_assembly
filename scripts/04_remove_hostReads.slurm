@@ -1,4 +1,4 @@
- #!/bin/bash
+#!/bin/bash
 ####### Reserve computing resources #############
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
@@ -8,12 +8,17 @@
 
 ####### Set environment variables ###############
 MINIMAP2=/work/soghigian_lab/apps/minimap2-2.31_x64-linux/minimap2
+SAMTOOLS=/work/soghigian_lab/apps/samtools-1.23/samtools
 REF_GENOME=/work/soghigian_lab/huiqing.yeo/sarcocyst_assembly/ref_genome/GCA_965153185.1_Rangifer_t_t_557_genomic.fna.gz
 
 cd /work/soghigian_lab/huiqing.yeo/sarcocyst_assembly
 
 ####### script ##################################
+# Map reads to Rangifer tarandus reference genome
+# Find and extract unmapped reads
+${MINIMAP2} -t 8 -ax map-ont ${REF_GENOME} basecalled_q10.fastq.gz | ${SAMTOOLS} view -b -f 4 | ${SAMTOOLS} fastq > unmapped.fastq
 
-${MINIMAP2} -t 8 -ax map-ont ${REF_GENOME} sarcocyst_q10.fastq.gz > mapped.sam 
+# convert BAM to FASTQ
+${SAMTOOLS} fastq unmapped.bam > unmapped.fastq
 
 echo "Job finised with exit code $? at: `date`"
