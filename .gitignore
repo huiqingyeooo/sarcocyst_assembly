@@ -3,6 +3,7 @@ nanoplot/
 ref_genome/
 *.fastq.gz
 *.fasta
+*.fastq
 *.bam
 *.out
 *.sam
