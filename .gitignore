@@ -3,6 +3,7 @@ nanoplot/
 ref_genome/
 flye/
 basta/
+ref_database/
 *.fastq.gz
 *.fasta
 *.fastq

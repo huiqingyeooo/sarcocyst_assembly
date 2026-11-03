@@ -1,0 +1,43 @@
+# Log
+# Using entrez to retrieve sequences to make a Sarcocystidae reference database
+
+# As of 2 November 2026, I figured out a way to combine the taxid retrieval and sequence retrieval into one step (script below)
+# This serves as a reminder for me to combine these two steps in the future (this section here, and the first section in 2_get_taxids.slurm)
+
+for i in $(ls uids_${TAX_ID}_${TAXA_NAME}_chunk*);
+do
+chunkNo=`echo $i | awk -F"_" '{print $4}'`
+cat ${i} | efetch -db nuccore -format fasta > sequences_${TAX_ID}_${TAXA_NAME}_${chunkNo}.fasta
+echo "sequences_${TAX_ID}_${TAXA_NAME}_${chunkNo}.fasta download done"
+esummary -db nuccore -id $(cat ${i}) | xtract -pattern DocumentSummary -element TaxId > taxids_${TAX_ID}_${TAXA_NAME}_${chunkNo}.txt
+echo "taxids_${TAX_ID}_${TAXA_NAME}_${chunkNo}.txt download done"
+done
+
+# On 3 November 2026, I realised that I can retrieve accession numbers directly using esearch and piping to efetch. So there is no need to download uids.
+# I am downloading accession numbers, and retrieving fasta and taxids from the accession numbers. 
+# If there are fasta sequences that didn't download successfully, I can then use fasta headers (which contains accession numbers) to troubleshoot and retrieve the missing sequences.
+# I am trying out the new method in 05_download_refSequences, and will delete this section if it works.
+# efetch -format options include acc for accession numbers, uid for uids, fasta for fasta sequences.
+
+esearch -db nuccore -query "txid${TAX_ID}[Organism:exp] \
+AND all[Filter] NOT unverified[Properties]" \
+| efetch -format acc > acc_${TAX_ID}_${TAXA_NAME}.txt
+
+# I also realised that I don't need to retrieve taxids at this stage.
+# In the previous script (2_get_taxids.slurm), I needed taxids to build an emu reference database.
+# But now my objective is to build a sarcocystidae reference database for sample identification.
+# Even though some fasta sequences might not download successfully, I can still use the fasta headers (which contains accession numbers) to troubleshoot and retrieve the missing sequences in the future.
+# Reference code to compare the accession numbers in the fasta headers with the accession numbers in text files below:
+
+# Extract the successfully downloaded accessions from the FASTA file headers
+# (Removes the '>' symbol and strips the text after the accession)
+grep ">" sequences.fasta | awk '{print $1}' | sed 's/>//g' | sort > success_acc.txt
+
+# Output the accession numbers present in 'acc.txt' but missing from 'success_acc.txt'
+comm -23 all_uids.txt success_uids.txt > failed_uids.txt
+
+# Some accession numbers are not linked to a valid fasta sequence.
+# e.g., AAQM00000000.3. This entry is the master record for a whole genome shotgun sequencing project and contains no sequence data.
+# Other accession numbers are linked to a valid fasta sequence, but the accesion within header is not formatted the same way as the accession number in the text file
+# e.g., accession number 5XXB_1 and header pdb|5XXB|1
+

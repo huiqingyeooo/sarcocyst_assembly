@@ -1,0 +1,114 @@
+salloc --mem=80G -c 1 -N 1 -n 8 -t 05:00:00
+
+source ~/software/init-conda-sl
+conda activate /work/soghigian_lab/apps/conda/envs/entrez
+
+TAX_ID=5809
+TAXA_NAME=Sarcocystidae
+WORKING_FOLDER=/work/soghigian_lab/huiqing.yeo/sarcocyst_assembly/ref_database
+
+# Note: NCBI key is specific to user
+# create your own using your NCBI account and paste it here
+export NCBI_API_KEY=8d70027be2ed63ac8e322bdf53042857f608
+
+# run esearch to determine number of sequences for the taxon of interest, and download accession numbers
+# count: 344826
+esearch -db nuccore -query "txid${TAX_ID}[Organism:exp] \
+AND all[Filter] NOT unverified[Properties]" \
+| efetch -format acc > acc_${TAX_ID}_${TAXA_NAME}.txt
+
+# accession 344826
+# uid 344826
+
+# check that all accession numbers were retrieved and saved to the text file
+# 344826
+cat acc_${TAX_ID}_${TAXA_NAME}.txt | wc -l
+
+# The uids are first split into chunks to avoid 'too many requests' and 'connection reset' errors
+mkdir split_${TAXA_NAME}
+cd split_${TAXA_NAME}
+
+split -d -l 500 ${WORKING_FOLDER}/acc_${TAX_ID}_${TAXA_NAME}.txt acc_${TAX_ID}_${TAXA_NAME}_chunk
+
+# This section downloads sequences and retrieves taxids from NCBI using the list of uids generated above.
+for i in $(ls acc_${TAX_ID}_${TAXA_NAME}_chunk*);
+do
+chunkNo=`echo $i | awk -F"_" '{print $4}'`
+cat ${i} | efetch -db nuccore -format fasta > sequences_${TAX_ID}_${TAXA_NAME}_${chunkNo}.fasta
+echo "sequences_${TAX_ID}_${TAXA_NAME}_${chunkNo}.fasta download done"
+esummary -db nuccore -id $(cat ${i}) | xtract -pattern DocumentSummary -element TaxId > taxids_${TAX_ID}_${TAXA_NAME}_${chunkNo}
+echo "taxids_${TAX_ID}_${TAXA_NAME}_${chunkNo} download done"
+done
+
+rm sequences_${TAXA_NAME}_all.fasta 
+cat sequences_${TAX_ID}_${TAXA_NAME}_*.fasta > sequences_${TAX_ID}_${TAXA_NAME}_all.fasta
+cat taxids_${TAX_ID}_${TAXA_NAME}_* > taxids_${TAX_ID}_${TAXA_NAME}_all
+
+# Extract the successfully downloaded accessions from the FASTA file headers
+# (Removes the '>' symbol and strips the text after the accession)
+grep ">" sequences_5809_Sarcocystidae_all.fasta | awk '{print $1}' | sed 's/>//g' | sort > success_acc.txt
+
+# Output the accession numbers present in 'all_acc.txt' but missing from 'success_acc.txt'
+comm -23 <(sort ../acc_5809_Sarcocystidae.txt) <(sort success_acc.txt) > failed_acc.txt
+
+# Retrieve the fasta sequences for the accession numbers that failed to download
+cat failed_acc.txt | efetch -db nuccore -format fasta > add_sequences1.fasta
+grep ">" add_sequences1.fasta | awk '{print $1}' | sed 's/>//g' | sort > success_add1.txt #175
+comm -23 <(sort failed_acc.txt) <(sort success_add1.txt) > failed_acc2.txt
+
+# concatenate all successfully downloaded sequences into one fasta file
+cat sequences_5809_Sarcocystidae_all.fasta add_sequences1.fasta > sequences_5809_Sarcocystidae_all2.fasta
+
+# clean up folder
+rm acc_5809_Sarcocystidae_chunk*
+rm sequences_5809_Sarcocystidae_chunk*.fasta
+rm taxids_5809_Sarcocystidae_chunk*
+
+##################################
+# Below is a section of code to check number of sequences and taxids compared to acc list in each chunk, and reruns the chunks that failed to download all sequences or taxids.
+##################################
+
+# Check that number of sequences downloaded match counts
+# note: there might be a curl command error when downloading sequences
+
+num_of_uids_downloaded=$(cat ${WORKING_FOLDER}/uids_${TAX_ID}_${TAXA_NAME}.txt | wc -l)
+num_of_sequences_downloaded=$(grep ">" sequences_${TAX_ID}_${TAXA_NAME}_all.fasta | wc -l)
+num_of_taxids_downloaded=$(cat taxids_${TAX_ID}_${TAXA_NAME}_all.taxid | wc -l)
+
+echo "Number of uids downloaded: ${num_of_uids_downloaded}"
+echo "Number of sequences downloaded: ${num_of_sequences_downloaded}"
+echo "Number of taxids downloaded: ${num_of_taxids_downloaded}"
+
+rm _chunk_summary.txt
+# check that number matches
+if [[ "$num_of_uids_downloaded" == "$num_of_sequences_downloaded" ]]; then
+    echo "Number of uids downloaded = Number of sequences downloaded."
+    cp sequences_${TAX_ID}_${TAXA_NAME}_all.fasta ${WORKING_FOLDER}
+    cd ${WORKING_FOLDER}
+    rm -r split_${TAXA_NAME}
+else
+	echo "Number of uids downloaded not equals to Number of sequences downloaded."
+    for i in uids_${TAX_ID}_${TAXA_NAME}_chunk*
+    do
+    chunkNo=`echo $i | awk -F"_" '{print $4}'`
+    echo ${chunkNo}
+    col1=`cat uids_${TAX_ID}_${TAXA_NAME}_${chunkNo} | wc -l`
+    col2=`cat sequences_${TAX_ID}_${TAXA_NAME}_${chunkNo}.taxid | wc -l`
+    col3=`grep ">" sequences_${TAX_ID}_${TAXA_NAME}_${chunkNo}.fasta  | wc -l`
+    echo ${i} $col1 $col2 $col3 >> _chunk_summary.txt
+    done
+    awk '$2 != $4 {print $1}' _chunk_summary.txt > _chunk_to_rerun_fasta.txt
+    awk '$2 != $3 {print $1}' _chunk_summary.txt > _chunk_to_rerun_taxids.txt
+fi
+
+# Rerun the chunks that failed to download sequences or taxids
+for i in $(cat _chunk_to_rerun_fasta2.txt);
+do
+chunkNo=`echo $i | awk -F"_" '{print $4}'`
+# unhash this portion for re-downloading sequences
+cat ${i} | efetch -db nuccore -format fasta > sequences_${TAX_ID}_${TAXA_NAME}_${chunkNo}.fasta
+echo "sequences_${TAX_ID}_${TAXA_NAME}_${chunkNo}.fasta download done"
+# unhash this portion for re-downloading taxids
+#esummary -db nuccore -id $(cat ${i}) | xtract -pattern DocumentSummary -element TaxId > taxids_${TAX_ID}_${TAXA_NAME}_${chunkNo}
+#echo "taxids_${TAX_ID}_${TAXA_NAME}_${chunkNo} download done"
+done
