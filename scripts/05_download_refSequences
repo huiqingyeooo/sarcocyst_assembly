@@ -64,6 +64,12 @@ rm acc_5809_Sarcocystidae_chunk*
 rm sequences_5809_Sarcocystidae_chunk*.fasta
 rm taxids_5809_Sarcocystidae_chunk*
 
+mv * ../
+rm -r split_Sarcocystidae
+
+# clean fasta for makeblastdb
+sed 's/ /_/g' sequences_5809_Sarcocystidae_all2.fasta > sequences_5809_Sarcocystidae_all2_cleaned.fasta
+
 ##################################
 # Below is a section of code to check number of sequences and taxids compared to acc list in each chunk, and reruns the chunks that failed to download all sequences or taxids.
 ##################################
@@ -112,3 +118,54 @@ echo "sequences_${TAX_ID}_${TAXA_NAME}_${chunkNo}.fasta download done"
 #esummary -db nuccore -id $(cat ${i}) | xtract -pattern DocumentSummary -element TaxId > taxids_${TAX_ID}_${TAXA_NAME}_${chunkNo}
 #echo "taxids_${TAX_ID}_${TAXA_NAME}_${chunkNo} download done"
 done
+
+
+##############################################
+# Below are codes to retrieve selected genes of interest for ref database
+##############################################
+
+mkdir barcodes && cd barcodes
+
+# COI
+esearch -db nucleotide -query "txid${TAX_ID}[Organism:exp] \
+AND (COI[Gene] OR CO1[Gene] OR COX1[Gene] OR COXI[Gene] \
+OR cytochrome c oxidase subunit I[Gene] OR cytochrome c oxidase subunit 1[Gene] \
+OR cytochrome oxidase subunit 1[Gene] OR cytochrome oxidase subunit I[Gene] \
+OR COI[Title] OR CO1[Title] OR COX1[Title] OR COXI[Title] \
+OR cytochrome c oxidase subunit I[Title] OR cytochrome c oxidase subunit 1[Title] \
+OR cytochrome oxidase subunit 1[Title] OR cytochrome oxidase subunit I[Title]) \
+NOT complete genome[All Fields] \
+NOT whole genome shotgun" \
+| efetch -format fasta  > ${TAX_ID}_${TAXA_NAME}_coi.fasta
+
+# 18S, 28S, ITS, 5.8S
+esearch -db nucleotide -query "txid${TAX_ID}[Organism:exp] \
+AND (18S[All Fields] OR 18S rRNA[All Fields] OR 18S ribosomal RNA[All Fields] \
+OR 28S[All Fields] OR 28S rRNA[All Fields] OR 28S ribosomal RNA[All Fields] \
+OR 5.8S[All Fields] OR 5.8S rRNA[All Fields] OR 5.8S ribosomal RNA[All Fields] \
+OR ITS[All Fields] OR its[All Fields] \
+OR internal transcribed spacer [All Fields] \
+OR internal transcribed spacers [All Fields] \
+OR 28S-18S intergenic spacer [All Fields] \
+OR 28s-18s ribosomal RNA intergenic spacer [All Fields] \
+OR 28s-18s rRNA intergenic spacer [All Fields] \
+OR 28s-18s rRNA IGS[All Fields] \
+OR small subunit ribosomal[All Fields] OR small subunit rRNA[All Fields] OR small subunit RNA[All Fields] \
+OR large subunit ribosomal[All Fields] OR large subunit rRNA[All Fields] OR large subunit RNA[All Fields]) \
+NOT complete genome[All Fields] \
+NOT whole genome shotgun" \
+| efetch -format fasta  > ${TAX_ID}_${TAXA_NAME}_18S_28S_ITS_5.8S.fasta
+
+# rpoB
+esearch -db nucleotide -query "txid${TAX_ID}[Organism:exp] \
+AND (rpoB[All Fields] OR RPOB[All Fields] OR RNA polymerase beta [All Fields] OR rna polymerase beta [All Fields]) \
+NOT complete genome[All Fields] \
+NOT whole genome shotgun" \
+| efetch -format fasta  > ${TAX_ID}_${TAXA_NAME}_rpoB.fasta
+
+rm ${TAX_ID}_${TAXA_NAME}_barcodes.fasta
+cat *.fasta > ${TAX_ID}_${TAXA_NAME}_barcodes.fasta
+
+# clean fasta for makeblastdb
+sed -i 's/ /_/g' ${TAX_ID}_${TAXA_NAME}_barcodes.fasta
+
