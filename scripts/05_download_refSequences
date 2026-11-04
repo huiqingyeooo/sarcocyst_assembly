@@ -168,4 +168,5 @@ cat *.fasta > ${TAX_ID}_${TAXA_NAME}_barcodes.fasta
 
 # clean fasta for makeblastdb
 sed -i 's/ /_/g' ${TAX_ID}_${TAXA_NAME}_barcodes.fasta
-
+sed -i 's/ /_/g' ${TAX_ID}_${TAXA_NAME}_18S_28S_ITS_5.8S.fasta
+sed -i 's/ /_/g' ${TAX_ID}_${TAXA_NAME}_rpoB.fasta
