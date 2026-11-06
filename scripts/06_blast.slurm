@@ -39,10 +39,6 @@ blastn \
 REF=coi
 awk '$4 >= 400' blast_${REF}_hifiasm.out > blast_${REF}_hifiasm_filtered.txt
 awk '$4 >= 400' blast_${REF}_flye.out > blast_${REF}_flye_filtered.txt
-
 awk '$4 >= 1000' blast_${REF}_flye.out > blast_${REF}_flye_filtered1000.txt
-
-
-
 
 echo "Job finised with exit code $? at: `date`"
