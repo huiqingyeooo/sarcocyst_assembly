@@ -28,9 +28,12 @@ cp -r /work/soghigian_lab/apps/BASTA/taxonomy /scratch/${SLURM_JOB_ID}/
 
 cd ${BASTA_OUTPUT}
 
+#PATH=/work/soghigian_lab/apps/seqtk:$PATH
+#seqtk seq -a ${BASTA_INPUT}/basecalled_q10.fastq.gz > ${BASTA_INPUT}/basecalled_q10.fasta
+
 # 1. Uses parallel to chunk fasta into blocks of 500K, and submits 5 (-j) of them each time, each using 3 (num_threads) threads on the cluster
 echo "starting blast"
-cat ${BASTA_INPUT}/basecalled_q10.fastq.gz | parallel -j 5 --block 500k --recstart '>' --pipe blastn -num_threads 3 -outfmt 6 -db /work/soghigian_lab/databases/gb_nt/nt_euk -query - > basecalled_q10.blast
+cat ${BASTA_INPUT}/basecalled_q10.fasta | parallel -j 5 --block 500k --recstart '>' --pipe blastn -num_threads 3 -outfmt 6 -db /work/soghigian_lab/databases/gb_nt/nt_euk -query - > basecalled_q10.blast
 
 # 2. Assigns taxonomies to sequences or groups of sequences based on the Last Common Ancestor (LCA) of a number of best hits
 # -m: minimum number of hits a sequence must have to be assigned an LCA (default 3)
