@@ -28,6 +28,11 @@ ${DORADO} basecaller sup ${POD5} --verbose > calls.bam
 # note: could try --emit-fastq and --min-qscore 10 next time
 
 echo "`date` Converting BAM to FASTQ"
-${SAMTOOLS} fastq -@ 16 calls2.bam | gzip > sarcocyst.fastq.gz
+
+#${SAMTOOLS} fastq calls.bam > basecalled.fastq.gz
+
+echo "`date` Trimming adapters"
+# trim adapters
+${DORADO} trim basecalled.bam -k SQK-LSK114 --emit-fastq > basecalled_trimmed.fastq
 
 echo "`date` End of script"
