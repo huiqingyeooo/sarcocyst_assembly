@@ -5,6 +5,7 @@ flye/
 hifiasm/
 basta/
 ref_database/
+reads_polishing/
 *.fastq.gz
 *.fasta
 *.fastq
