@@ -40,4 +40,3 @@ comm -23 all_uids.txt success_uids.txt > failed_uids.txt
 # e.g., AAQM00000000.3. This entry is the master record for a whole genome shotgun sequencing project and contains no sequence data.
 # Other accession numbers are linked to a valid fasta sequence, but the accesion within header is not formatted the same way as the accession number in the text file
 # e.g., accession number 5XXB_1 and header pdb|5XXB|1
-

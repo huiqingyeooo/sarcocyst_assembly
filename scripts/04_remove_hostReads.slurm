@@ -16,6 +16,7 @@ cd /work/soghigian_lab/huiqing.yeo/sarcocyst_assembly
 ####### script ##################################
 # Map reads to Rangifer tarandus reference genome
 # Find and extract unmapped reads
-${MINIMAP2} -t 8 -ax map-ont ${REF_GENOME} basecalled_q10.fastq.gz | ${SAMTOOLS} view -b -f 4 | ${SAMTOOLS} fastq > unmapped_q10.fastq
+#${MINIMAP2} -t 8 -ax map-ont ${REF_GENOME} basecalled_q10.fastq.gz | ${SAMTOOLS} view -b -f 4 | ${SAMTOOLS} fastq > unmapped_q10.fastq
+${MINIMAP2} -t 8 -ax map-ont ${REF_GENOME} basecalled_trimmed_q10.fastq.gz | ${SAMTOOLS} view -b -f 4 | ${SAMTOOLS} fastq > unmapped_trimmed_q10.fastq
 
 echo "Job finised with exit code $? at: `date`"
