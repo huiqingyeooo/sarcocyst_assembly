@@ -14,6 +14,7 @@ conda activate /work/soghigian_lab/apps/conda/envs/flye
 cd /work/soghigian_lab/huiqing.yeo/sarcocyst_assembly
 
 # genome assembly
-flye --threads 16 --nano-hq unmapped_q10.fastq -i 5 --out-dir ./flye/i5
+#flye --threads 16 --nano-hq unmapped_q10.fastq -i 5 --out-dir ./flye/i5
+flye --threads 16 --nano-hq unmapped_trimmed_q10.fastq -i 5 --out-dir ./flye/unmapped
 
 echo "Job finised with exit code $? at: `date`"
