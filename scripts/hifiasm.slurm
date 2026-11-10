@@ -7,12 +7,12 @@
 #SBATCH --mem=100G
 
 ####### Set environment variables ###############
-HIFIASM=/work/soghigian_lab/apps/hifiasm-0.16/hifiasm
+HIFIASM=/work/soghigian_lab/apps/hifiasm/hifiasm
 
 ####### script ##################################
 cd /work/soghigian_lab/huiqing.yeo/sarcocyst_assembly
 
 # genome assembly
-${HIFIASM} -t 16 -o ./hifiasm/sarcocyst_q10_hifiasm.asm unmapped_q10.fastq
+${HIFIASM} -t 16 -o ./hifiasm/sarcocyst_q10_hifiasm.asm unmapped_trimmed_q10.fastq
 
 echo "Job finised with exit code $? at: `date`"
