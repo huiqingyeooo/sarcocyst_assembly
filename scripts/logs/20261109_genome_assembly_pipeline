@@ -3,18 +3,28 @@
 
 # Meeting with John, 6 November 2026
 # It would be better to run fasta on contigs instead of raw sequence reads. This speeds up the process.
-# 
-
 
 # Current pipeline that I am working on:
 # Raw pod5 files -> basecalling (dorado) -> adapter removal (dorado) -> quality filter (chopper) -> assembly (flye or hifiasm) ->
 # map to caribou reference genome and extract unmapped reads (minimap2) -> 
 
 # To do:
-# genome assembly with flye and hifiasm
+# genome assembly with flye, hifiasm (latest version), verkko
 # genome assembly QC: blobtools, quast
 # remove contaminants associated with contaminants (basta)
 # remove reads from fastq files that are associated with contaminant contigs
-# reassemble remaining reads with flye and hifiasm
+# reassemble remaining reads with flye, hifiasm
 # genome assembly QC: blobtools, quast, BUSCO
-# 
+# kmer counter: meryl (https://github.com/marbl/meryl)
+# genome size estimate and heterozygosity: genomescope
+
+# polishing - try with medaka or inspector (https://github.com/Maggi-Chen/Inspector)
+# for inspector - use inspector but not error correction module (outputs bed files that can be used for error correction in flye)
+
+Notes
+# Reference pipeline: https://bioinformaticsworkbook.org/dataAnalysis/GenomeAssembly/IteratingGenomeAssemblyWithReadFiltration.html#gsc.tab=0
+# Purging - https://pmc.ncbi.nlm.nih.gov/articles/PMC8178825/
+# Sarcocystis - predominantly haploid. This can be determined with genomescope
+# Might need to use Metaflye if Sarcocystis cysts are not clones
+
+
