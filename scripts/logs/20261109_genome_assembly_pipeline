@@ -7,9 +7,9 @@
 # Current pipeline that I am working on:
 # Raw pod5 files -> basecalling (dorado) -> adapter removal (dorado) -> quality filter (chopper) -> assembly (flye or hifiasm) ->
 # map to caribou reference genome and extract unmapped reads (minimap2) -> 
+# genome assembly with flye, hifiasm (latest version) ->
 
 # To do:
-# genome assembly with flye, hifiasm (latest version), verkko
 # genome assembly QC: blobtools, quast
 # remove contaminants associated with contaminants (basta)
 # remove reads from fastq files that are associated with contaminant contigs
@@ -26,5 +26,5 @@ Notes
 # Purging - https://pmc.ncbi.nlm.nih.gov/articles/PMC8178825/
 # Sarcocystis - predominantly haploid. This can be determined with genomescope
 # Might need to use Metaflye if Sarcocystis cysts are not clones
-
+# Tried Verkko for genome assembly, but hifi reads are needed.
 
