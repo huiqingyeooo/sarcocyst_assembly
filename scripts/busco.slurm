@@ -16,6 +16,8 @@ cd /work/soghigian_lab/huiqing.yeo/sarcocyst_assembly/flye/unmapped
 # check available BUSCO datasets
 # busco --list-datasets
 
-busco -m genome -i assembly.fasta -o busco_output -l apicomplexa -c 8
+#busco -m genome -i assembly.fasta -o busco_output -l apicomplexa -c 8
+
+busco -m genome -i sarcocyst_q10_hifiasm.asm.bp.p_ctg.fasta -o busco_output -l apicomplexa -c 8
 
 echo "Job finised with exit code $? at: `date`"
