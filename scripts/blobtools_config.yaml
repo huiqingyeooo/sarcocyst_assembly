@@ -1,0 +1,56 @@
+assembly:
+  accession: sarcocystis_assembly_flye ###the name of your assembly
+  level: contig ### scaffold or contig
+  prefix: sarcocystis_assembly_flye ###the name of your assembly
+  file: /work/soghigian_lab/huiqing.yeo/sarcocyst_assembly/flye/unmapped/blobtools2/sarcocystis_assembly_flye.fastq.gz
+  scaffold-count: 5419 ###get from bbmap
+  span: 158924897 ###get from bbmap genome size
+busco:
+  basal_lineages:
+    - eukaryota_odb10 ###might be different ODB set depending on what you're working with
+  lineages:
+    - eukaryota_odb10 ###same as above
+  download_dir: /work/soghigian_lab/huiqing.yeo/sarcocyst_assembly/flye/unmapped/blobtools2/busco_db
+settings:
+  blast_chunk: 100000
+  blast_max_chunks: 10
+  blast_min_length: 1000
+  blast_overlap: 0
+  stats_chunk: 1000
+  stats_windows:
+    - 0.1
+    - 0.01
+    - 100000
+    - 1000000
+  taxdump: /work/soghigian_lab/databases/taxdump 
+  tmp: /tmp
+reads:
+  coverage:
+    max: 40
+  paired: []
+  single:
+    - base_count: 164489725 ###the number of bases in your reads (from line 44 in the run script)
+      file: /work/soghigian_lab/huiqing.yeo/sarcocyst_assembly/flye/unmapped/blobtools2/sarcocystis_reads.fastq.gz
+      platform: OXFORD_NANOPORE ###change to whatever the sequencing platform is
+      prefix: sarcocystis_reads ###change to whatever the prefix is on your concatenated fastq.gz
+similarity:
+  defaults:
+    evalue: 1.0e-10
+    import_evalue: 1.0e-25
+    max_target_seqs: 10
+    taxrule: buscogenes
+  diamond_blastx:
+    name: reference_proteomes
+    path: /work/soghigian_lab/databases/uniprot
+  blastn:
+    name: nt_euk_prok
+    path: /work/soghigian_lab/databases/gb_nt
+  diamond_blastp:
+    name: reference_proteomes
+    path: /work/soghigian_lab/databases/uniprot
+    import_max_target_seqs: 100000
+    taxrule: blastp=buscogenes
+taxon:
+  name: Sarcocystis neurona ###whatever species you're working on
+  taxid: "42890" ### the ncbi taxon number
+version: 1
