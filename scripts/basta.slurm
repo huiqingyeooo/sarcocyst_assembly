@@ -23,13 +23,10 @@ mkdir -p ${BASTA_OUTPUT}
 cd ${BASTA_OUTPUT}
 
 PATH=/work/soghigian_lab/apps/seqtk:$PATH
-#seqtk seq -a ${BASTA_INPUT}/unmapped_q10.fastq > ${BASTA_INPUT}/unmapped_q10.fasta
 
 # 1. Uses parallel to chunk fasta into blocks of 500K, and submits 5 (-j) of them each time, each using 3 (num_threads) threads on the cluster
 echo "starting blast"
-#cat ${BASTA_INPUT}/assembly.fasta | parallel -j 5 --block 500k --recstart '>' --pipe blastn -num_threads 3 -outfmt 6 -db /work/soghigian_lab/databases/gb_nt/nt_euk -query - > unmapped_flye.blast
-
-cat ${BASTA_INPUT}/sarcocyst_q10_hifiasm.asm.bp.p_ctg.fasta | parallel -j 5 --block 500k --recstart '>' --pipe blastn -num_threads 3 -outfmt 6 -db /work/soghigian_lab/databases/gb_nt/nt_euk -query - > unmapped_hifiasm.blast
+cat ${BASTA_INPUT}/assembly.fasta | parallel -j 5 --block 500k --recstart '>' --pipe blastn -num_threads 3 -outfmt 6 -db /work/soghigian_lab/databases/gb_nt/nt_euk -query - > unmapped_flye.blast
 
 # Copy taxonomy database into scratch for each sample, as program can sometimes throw errors when running parallel jobs
 # https://github.com/timkahlke/BASTA/issues/24
@@ -51,7 +48,13 @@ basta sequence -m 1 -p 51 -l 10 -i 75 -e 0.001 unmapped_hifiasm.blast unmapped_h
 
 
 # 3. Filter a given fasta based on basta annotations
+
+# 
+sort -u -k2,2 unmapped_flye.basta > unique.basta
+
+
 #echo "extracting fasta for TEMPLATE"
+
 /work/soghigian_lab/apps/BASTA/scripts/filter_basta_fasta.py ${BASTA_INPUT}/assembly.fasta unmapped_flye.sarcocystidae.fasta Sarcocystidae unmapped_flye.basta
 
 
@@ -102,13 +105,9 @@ basta sequence -m 1 -p 51 -l 10 -i 75 -e 0.001 unmapped_hifiasm.blast unmapped_h
 
 #basta sequence -m 1 -p 51 -l 100 -i 75 -e 0.001 unmapped_flye.blast unmapped_flye.basta gb -d /work/soghigian_lab/huiqing.yeo/sarcocyst_assembly/flye/unmapped/basta_output
 
-
-
 # 3. Filter a given fasta based on basta annotations
 #echo "extracting fasta for TEMPLATE"
 /work/soghigian_lab/apps/BASTA/scripts/filter_basta_fasta.py ${BASTA_INPUT}/assembly.fasta unmapped_flye.sarcocystidae.fasta Sarcocystidae unmapped_flye.basta
-
-
 /work/soghigian_lab/apps/BASTA/scripts/filter_basta_fasta.py ${BASTA_INPUT}/assembly.fasta unmapped_hifiasm.sarcocystidae.fasta Sarcocystidae unmapped_hifiasm.basta
 
 #rm -r /scratch/${SLURM_JOB_ID}/taxonomy
